@@ -1,2 +1,10 @@
-User-Agent: *
-Disallow:
+# *
+User-agent: *
+Allow: /
+Disallow: /rechtliches/
+
+# Host
+Host: https://atiye-beauty-studio.de
+
+# Sitemaps
+Sitemap: https://atiye-beauty-studio.de/sitemap.xml
