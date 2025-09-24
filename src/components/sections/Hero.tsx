@@ -24,7 +24,7 @@ const Hero = () => {
   }, [images.length]);
 
   return (
-    <section className="relative min-h-screen w-full flex items-center wave-bg overflow-hidden -mt-16 pt-16 pb-8" id="start">
+    <section className="relative min-h-screen w-full flex items-center wave-bg overflow-hidden" id="start">
       {/* Background Images Slideshow */}
       <div className="absolute inset-0">
         {images.map((image, index) => (
@@ -47,6 +47,8 @@ const Hero = () => {
         {/* Overlay Gradient */}
         <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/70 to-background/50" />
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/10" />
+        {/* Light overlay for better text readability with transparent header */}
+        <div className="absolute inset-0 bg-black/20" />
       </div>
 
       <div className="relative z-10 container mx-auto px-4 lg:px-8 flex items-center justify-center min-h-full py-8 md:py-12 lg:py-16">

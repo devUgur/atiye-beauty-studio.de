@@ -56,7 +56,18 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 80px;
+  scroll-padding-top: 0; /* No global padding - handled per section */
+}
+
+/* Section anchor offsets for fixed header */
+section[id] {
+  scroll-margin-top: 72px; /* compactHeight + buffer */
+}
+
+@media (max-width: 767px) {
+  section[id] {
+    scroll-margin-top: 80px; /* More space on mobile */
+  }
 }
 
 body {

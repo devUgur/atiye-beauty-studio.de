@@ -85,12 +85,12 @@ const Footer = () => {
               <div className="flex items-center space-x-3">
                 <Instagram className="h-5 w-5 text-primary-foreground/60" />
                 <a
-                  href="https://instagram.com/atiyebeautystudio"
+                  href="https://www.instagram.com/atiye_beautystudio"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
                 >
-                  @atiyebeautystudio
+                  @atiye_beautystudio
                 </a>
               </div>
             </div>
@@ -100,7 +100,7 @@ const Footer = () => {
         <div className="border-t border-primary-foreground/20 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-sm text-primary-foreground/60">
-              © 2024 ATIYE Beauty Studio. Alle Rechte vorbehalten.
+              © 2025 Atiye Beauty Studio. Alle Rechte vorbehalten.
             </div>
             <nav className="flex space-x-6 text-sm">
               <a href="/rechtliches/impressum" className="text-primary-foreground/60 hover:text-primary-foreground transition-colors">
