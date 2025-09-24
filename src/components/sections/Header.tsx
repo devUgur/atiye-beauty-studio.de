@@ -57,6 +57,23 @@ const Header = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeIndex]);
 
+  // Re-measure underline when header height changes (scroll state)
+  useLayoutEffect(() => {
+    // Use requestAnimationFrame for smoother timing
+    const rafId = requestAnimationFrame(() => {
+      measureUnderline();
+    });
+    return () => cancelAnimationFrame(rafId);
+  }, [isScrolled]);
+
+  // Also re-measure when header height animation completes
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      measureUnderline();
+    }, 350); // Slightly longer than the animation duration (300ms + buffer)
+    return () => clearTimeout(timeoutId);
+  }, [isScrolled]);
+
   useEffect(() => {
     const onResize = () => measureUnderline();
     window.addEventListener("resize", onResize);
@@ -101,15 +118,14 @@ const Header = () => {
 
   return (
     <motion.header
-      className={`fixed inset-x-0 top-0 z-50
-        ${isScrolled ? "border-b border-border" : "border-b border-transparent"}
-        ${isScrolled ? "backdrop-blur bg-background/70 supports-[backdrop-filter]:bg-background/60" : "bg-transparent"}
+      className={`fixed inset-x-0 top-0 z-50 border-b
+        ${isScrolled || isMenuOpen ? "border-border backdrop-blur-md supports-[backdrop-filter]:bg-white/80" : "border-transparent bg-transparent"}
       `}
       initial={false}
       animate={{ 
         height: isScrolled ? compactHeight : heroHeight,
-        backgroundColor: isScrolled ? "rgba(255, 255, 255, 0.8)" : "rgba(255, 255, 255, 0)",
-        backdropFilter: isScrolled ? "blur(12px)" : "blur(0px)"
+        backgroundColor: (isScrolled || isMenuOpen) ? "rgba(255, 255, 255, 0.80)" : "rgba(255, 255, 255, 0)",
+        borderBottomColor: (isScrolled || isMenuOpen) ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0)"
       }}
       transition={{ 
         type: "spring", 
@@ -118,7 +134,10 @@ const Header = () => {
         mass: 0.8,
         duration: 0.3
       }}
-      style={{ willChange: "height, background-color, backdrop-filter" }}
+      style={{ 
+        willChange: "height, background-color, border-bottom-color",
+        WebkitBackdropFilter: (isScrolled || isMenuOpen) ? "blur(12px)" : "blur(0px)",
+      }}
     >
       <div className="container mx-auto px-4 lg:px-8 h-full">
         <div className="flex h-full items-center justify-between transition-[padding] duration-300">
@@ -208,7 +227,17 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border bg-background/80 backdrop-blur w-full absolute left-0 right-0 top-full z-50">
+          <motion.div
+            className="md:hidden py-4 w-full absolute left-0 right-0 top-full z-50
+                       backdrop-blur-md supports-[backdrop-filter]:bg-white/80 bg-white/80 border-b border-border"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            style={{ 
+              WebkitBackdropFilter: "blur(12px)",
+            }}
+          >
             <nav className="flex flex-col space-y-4 w-full px-4">
               {navItems.map((item, idx) => (
                 <button
@@ -239,7 +268,7 @@ const Header = () => {
                 <Button className="bg-primary hover:bg-accent text-primary-foreground">Termin vereinbaren</Button>
               </div>
             </nav>
-          </div>
+          </motion.div>
         )}
       </div>
     </motion.header>

@@ -51,7 +51,7 @@ const Hero = () => {
         <div className="absolute inset-0 bg-black/20" />
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 lg:px-8 flex items-center justify-center min-h-full py-8 md:py-12 lg:py-16">
+      <div className="relative z-10 container mx-auto px-4 lg:px-8 flex items-center justify-center min-h-full py-16 md:py-12 lg:py-16">
         <div className="max-w-4xl text-left w-full">
           {/* Main Heading */}
           <h1 className="hero-text text-3xl xs:text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-primary mb-3 sm:mb-4 md:mb-6 mt-6 sm:mt-8 md:mt-0">
@@ -117,7 +117,7 @@ const Hero = () => {
       </div>
 
       {/* Slideshow Indicators */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+      <div className="absolute bottom-12 md:bottom-8 left-1/2 transform -translate-x-1/2 z-20">
         <div className="flex space-x-2">
           {images.map((_, index) => (
             <button
