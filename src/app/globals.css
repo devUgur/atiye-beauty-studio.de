@@ -40,6 +40,49 @@
   /* Custom Shadows */
   --shadow-warm: 0 4px 6px -1px rgba(123, 82, 65, 0.1), 0 2px 4px -1px rgba(123, 82, 65, 0.06);
   --shadow-elegant: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  
+  /* Header backdrop colors */
+  --header-bg-scrolled: rgba(255, 255, 255, 0.80);
+  --header-bg-transparent: rgba(255, 255, 255, 0);
+  --header-border-scrolled: rgba(0, 0, 0, 0.1);
+  --header-border-transparent: rgba(0, 0, 0, 0);
+}
+
+.dark {
+  /* Dark Theme - Brown Color Scheme */
+  --background: 20 40% 15%; /* Dark brown background */
+  --foreground: 30 20% 95%; /* Light cream text */
+  --card: 20 35% 20%; /* Dark brown card */
+  --card-foreground: 30 20% 95%; /* Light cream text */
+  --popover: 20 35% 20%; /* Dark brown popover */
+  --popover-foreground: 30 20% 95%; /* Light cream text */
+  --primary: 25 35% 55%; /* Bronze primary */
+  --primary-foreground: 20 40% 15%; /* Dark brown text */
+  --secondary: 20 30% 25%; /* Dark brown secondary */
+  --secondary-foreground: 30 20% 95%; /* Light cream text */
+  --muted: 20 30% 25%; /* Dark brown muted */
+  --muted-foreground: 20 30% 60%; /* Medium brown text */
+  --accent: 20 40% 30%; /* Dark brown accent */
+  --accent-foreground: 30 20% 95%; /* Light cream text */
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 20 30% 65%; /* Dark brown border - much lighter for better visibility */
+  --input: 20 30% 35%; /* Dark brown input */
+  --ring: 25 35% 55%; /* Bronze ring */
+  
+  /* Dark Theme Gradients */
+  --gradient-warm: linear-gradient(135deg, hsl(20 40% 15%) 0%, hsl(20 35% 20%) 100%);
+  --gradient-bronze: linear-gradient(135deg, hsl(25 35% 55%) 0%, hsl(20 40% 30%) 100%);
+  
+  /* Dark Theme Shadows */
+  --shadow-warm: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-elegant: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.1);
+  
+  /* Header backdrop colors for dark theme */
+  --header-bg-scrolled: rgba(51, 34, 25, 0.80); /* Dark brown with 80% opacity */
+  --header-bg-transparent: rgba(51, 34, 25, 0);
+  --header-border-scrolled: rgba(255, 255, 255, 0.1);
+  --header-border-transparent: rgba(255, 255, 255, 0);
 }
 
 * {

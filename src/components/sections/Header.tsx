@@ -4,12 +4,15 @@ import { Button } from "@/components/ui/Button";
 import { Phone, Menu, X, Instagram } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 type NavItem = { label: string; href: string; isHome?: boolean };
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [prevIndex, setPrevIndex] = useState<number>(0);
 
   const navItems: NavItem[] = [
     { label: "Start", href: "/", isHome: true },
@@ -32,9 +35,65 @@ const Header = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // --- Auto-detect active section based on scroll position ---
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = navItems
+        .filter(item => !item.isHome)
+        .map(item => ({
+          id: item.href.replace('#', ''),
+          element: document.querySelector(item.href),
+          index: navItems.findIndex(navItem => navItem.href === item.href)
+        }))
+        .filter(section => section.element);
+
+      if (sections.length === 0) return;
+
+      const scrollPosition = window.scrollY + 100; // Offset for header height
+
+      // Find the section that's currently in view
+      let activeSectionIndex = 0; // Default to first section (Start)
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (section.element) {
+          const rect = section.element.getBoundingClientRect();
+          const elementTop = rect.top + window.scrollY;
+          
+          if (scrollPosition >= elementTop) {
+            activeSectionIndex = section.index;
+            break;
+          }
+        }
+      }
+
+      // Update active index if it changed
+      if (activeSectionIndex !== activeIndex) {
+        setPrevIndex(activeIndex);
+        setActiveIndex(activeSectionIndex);
+      }
+    };
+
+    // Initial check
+    handleScroll();
+
+    // Throttled scroll listener for better performance
+    let ticking = false;
+    const throttledScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", throttledScroll, { passive: true });
+    return () => window.removeEventListener("scroll", throttledScroll);
+  }, [activeIndex, navItems]);
+
   // --- Active underline state ---
-  const [activeIndex, setActiveIndex] = useState<number>(0);
-  const [prevIndex, setPrevIndex] = useState<number>(0);
   const [underlineRect, setUnderlineRect] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
 
   const navContainerRef = useRef<HTMLDivElement | null>(null);
@@ -52,30 +111,41 @@ const Header = () => {
     });
   };
 
+  // Professional ResizeObserver for dynamic underline adjustment
   useLayoutEffect(() => {
+    const container = navContainerRef.current;
+    if (!container) return;
+
+    // Initial measurement
     measureUnderline();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeIndex]);
 
-  // Re-measure underline when header height changes (scroll state)
-  useLayoutEffect(() => {
-    // Use requestAnimationFrame for smoother timing
-    const rafId = requestAnimationFrame(() => {
-      measureUnderline();
+    // Create ResizeObserver to watch for size changes
+    const resizeObserver = new ResizeObserver((entries) => {
+      // Use requestAnimationFrame for smooth updates
+      requestAnimationFrame(() => {
+        measureUnderline();
+      });
     });
-    return () => cancelAnimationFrame(rafId);
-  }, [isScrolled]);
 
-  // Also re-measure when header height animation completes
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      measureUnderline();
-    }, 350); // Slightly longer than the animation duration (300ms + buffer)
-    return () => clearTimeout(timeoutId);
-  }, [isScrolled]);
+    // Observe the container and all nav items
+    resizeObserver.observe(container);
+    itemRefs.current.forEach((item) => {
+      if (item) resizeObserver.observe(item);
+    });
 
+    // Cleanup
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [activeIndex, isScrolled]);
+
+  // Fallback for window resize (covers edge cases)
   useEffect(() => {
-    const onResize = () => measureUnderline();
+    const onResize = () => {
+      requestAnimationFrame(() => {
+        measureUnderline();
+      });
+    };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -96,6 +166,7 @@ const Header = () => {
       setPrevIndex(activeIndex);
       setActiveIndex(idx);
     }
+    
     if (isHome) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
@@ -119,13 +190,18 @@ const Header = () => {
   return (
     <motion.header
       className={`fixed inset-x-0 top-0 z-50 border-b
-        ${isScrolled || isMenuOpen ? "border-border backdrop-blur-md supports-[backdrop-filter]:bg-white/80" : "border-transparent bg-transparent"}
+        ${isScrolled || isMenuOpen ? "border-border backdrop-blur-md bg-white/80 dark:bg-[hsl(20_40%_15%)]/80" : "border-transparent"}
       `}
       initial={false}
       animate={{ 
         height: isScrolled ? compactHeight : heroHeight,
-        backgroundColor: (isScrolled || isMenuOpen) ? "rgba(255, 255, 255, 0.80)" : "rgba(255, 255, 255, 0)",
-        borderBottomColor: (isScrolled || isMenuOpen) ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0)"
+        backgroundColor: (isScrolled || isMenuOpen) ? "var(--header-bg-scrolled)" : "var(--header-bg-transparent)",
+        borderBottomColor: (isScrolled || isMenuOpen) ? "var(--header-border-scrolled)" : "var(--header-border-transparent)"
+      }}
+      style={{ 
+        willChange: "height, background-color, border-bottom-color",
+        WebkitBackdropFilter: (isScrolled || isMenuOpen) ? "blur(12px)" : "none",
+        backdropFilter: (isScrolled || isMenuOpen) ? "blur(12px)" : "none",
       }}
       transition={{ 
         type: "spring", 
@@ -134,26 +210,22 @@ const Header = () => {
         mass: 0.8,
         duration: 0.3
       }}
-      style={{ 
-        willChange: "height, background-color, border-bottom-color",
-        WebkitBackdropFilter: (isScrolled || isMenuOpen) ? "blur(12px)" : "blur(0px)",
-      }}
     >
       <div className="container mx-auto px-4 lg:px-8 h-full">
         <div className="flex h-full items-center justify-between transition-[padding] duration-300">
           {/* Logo */}
           <div className="flex items-center">
-               <motion.button
-                 onClick={() => handleNavClick("/", true, 0)}
-                 className="font-serif font-semibold text-primary hover:text-accent transition-colors focus:outline-none"
-                 animate={{
-                   fontSize: isScrolled ? "1.25rem" : "1.5rem",
-                   lineHeight: isScrolled ? "1.75rem" : "2rem"
-                 }}
-                 transition={{ duration: 0.3, ease: "easeInOut" }}
-               >
-                 ATIYE Beauty Studio
-               </motion.button>
+            <button
+              onClick={() => handleNavClick("/", true, 0)}
+              className="font-serif font-semibold text-primary hover:text-accent transition-all duration-500 ease-out focus:outline-none"
+              style={{
+                fontSize: isScrolled ? "1.125rem" : "1.25rem",
+                lineHeight: isScrolled ? "1.5rem" : "1.75rem",
+                transition: "font-size 0.5s ease-out, line-height 0.5s ease-out"
+              }}
+            >
+              ATIYE Beauty Studio
+            </button>
           </div>
 
           {/* Desktop Navigation */}
@@ -180,12 +252,13 @@ const Header = () => {
                     itemRefs.current[idx] = el;
                   }}
                   onClick={() => handleNavClick(item.href, item.isHome, idx)}
-                   className={`font-medium transition-all focus:outline-none
-                     ${idx === activeIndex ? "text-primary" : "text-foreground hover:text-primary"}`}
-                   style={{
-                     fontSize: isScrolled ? "0.875rem" : "1rem",
-                     transition: "font-size 0.3s ease-in-out"
-                   }}
+                  className={`font-medium transition-all duration-500 ease-out focus:outline-none ${
+                    idx === activeIndex ? "text-primary" : "text-foreground hover:text-primary"
+                  }`}
+                  style={{
+                    fontSize: isScrolled ? "0.875rem" : "1rem",
+                    transition: "font-size 0.5s ease-out, color 0.3s ease-out"
+                  }}
                   aria-current={idx === activeIndex ? "page" : undefined}
                 >
                   {item.label}
@@ -197,7 +270,13 @@ const Header = () => {
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
             <a href="tel:+4912345678900" className="text-primary hover:text-accent transition-colors">
-              <Phone className={`${isScrolled ? "h-5 w-5" : "h-6 w-6"}`} />
+              <Phone 
+                className="transition-all duration-500 ease-out"
+                style={{
+                  height: isScrolled ? "1.25rem" : "1.5rem",
+                  width: isScrolled ? "1.25rem" : "1.5rem"
+                }}
+              />
             </a>
             <a
               href="https://www.instagram.com/atiye_beautystudio?igsh=MTM3dDB2dXQ4c2R5cg%3D%3D"
@@ -205,14 +284,27 @@ const Header = () => {
               rel="noopener noreferrer"
               className="text-primary hover:text-accent transition-colors"
             >
-              <Instagram className={`${isScrolled ? "h-5 w-5" : "h-6 w-6"}`} />
+              <Instagram 
+                className="transition-all duration-500 ease-out"
+                style={{
+                  height: isScrolled ? "1.25rem" : "1.5rem",
+                  width: isScrolled ? "1.25rem" : "1.5rem"
+                }}
+              />
             </a>
             <Button
-              className={`bg-primary hover:bg-accent text-primary-foreground transition-all
-                          ${isScrolled ? "py-2 px-4 text-sm" : "py-3 px-5 text-base"}`}
+              className="bg-primary hover:bg-accent text-primary-foreground transition-all duration-500 ease-out"
+              style={{
+                paddingTop: isScrolled ? "0.5rem" : "0.75rem",
+                paddingBottom: isScrolled ? "0.5rem" : "0.75rem",
+                paddingLeft: isScrolled ? "1rem" : "1.25rem",
+                paddingRight: isScrolled ? "1rem" : "1.25rem",
+                fontSize: isScrolled ? "0.875rem" : "1rem"
+              }}
             >
               Termin vereinbaren
             </Button>
+            <ThemeToggle />
           </div>
 
           {/* Mobile Menu Button */}
@@ -229,13 +321,15 @@ const Header = () => {
         {isMenuOpen && (
           <motion.div
             className="md:hidden py-4 w-full absolute left-0 right-0 top-full z-50
-                       backdrop-blur-md supports-[backdrop-filter]:bg-white/80 bg-white/80 border-b border-border"
+                       backdrop-blur-md border-b border-border"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
             style={{ 
+              backgroundColor: "var(--header-bg-scrolled)",
               WebkitBackdropFilter: "blur(12px)",
+              backdropFilter: "blur(12px)",
             }}
           >
             <nav className="flex flex-col space-y-4 w-full px-4">
@@ -265,6 +359,7 @@ const Header = () => {
                 >
                   <Instagram className="h-5 w-5" />
                 </a>
+                <ThemeToggle />
                 <Button className="bg-primary hover:bg-accent text-primary-foreground">Termin vereinbaren</Button>
               </div>
             </nav>

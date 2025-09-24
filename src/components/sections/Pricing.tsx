@@ -65,7 +65,7 @@ const Pricing = () => {
         {/* Package Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
           {packages.map((pkg, index) => (
-            <Card key={index} className={`relative shadow-elegant ${pkg.popular ? 'border-primary border-2' : 'border-border'}`}>
+            <Card key={index} className={`relative shadow-elegant h-full flex flex-col ${pkg.popular ? 'border-primary border-2' : 'border-border'}`}>
               {pkg.popular && (
                 <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground">
                   <Star className="h-3 w-3 mr-1" />
@@ -80,15 +80,17 @@ const Pricing = () => {
                 <div className="text-3xl font-bold text-primary mb-2">{pkg.price}</div>
                 <div className="text-sm text-muted-foreground">{pkg.sessions}</div>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-3 mb-6">
-                  {pkg.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center text-sm">
-                      <Check className="h-4 w-4 text-primary mr-3 flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
+              <CardContent className="flex flex-col justify-between h-full">
+                <div>
+                  <ul className="space-y-3 mb-6">
+                    {pkg.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-center text-sm">
+                        <Check className="h-4 w-4 text-primary mr-3 flex-shrink-0" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
                 <Button 
                   className={`w-full ${pkg.popular ? 'bg-primary hover:bg-accent' : 'bg-secondary hover:bg-primary'} text-primary-foreground`}
                 >
@@ -102,7 +104,7 @@ const Pricing = () => {
         {/* Detailed Pricing Tables */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Women's Pricing */}
-          <Card className="shadow-elegant">
+          <Card className="border dark:border-border">
             <CardHeader className="bg-secondary/20">
               <h3 className="text-2xl font-serif font-bold text-center text-card-foreground">
                 Preise Damen
@@ -133,7 +135,7 @@ const Pricing = () => {
           </Card>
 
           {/* Men's Pricing */}
-          <Card className="shadow-elegant">
+          <Card className="border dark:border-border">
             <CardHeader className="bg-secondary/20">
               <h3 className="text-2xl font-serif font-bold text-center text-card-foreground">
                 Preise Herren

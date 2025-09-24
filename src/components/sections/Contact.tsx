@@ -48,7 +48,7 @@ const Contact = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           {/* Contact Form */}
-          <Card className="shadow-elegant">
+          <Card className="shadow-elegant dark:border-border">
             <CardHeader>
               <h3 className="text-2xl font-serif font-semibold text-card-foreground">
                 Nachricht senden
@@ -117,7 +117,7 @@ const Contact = () => {
 
           {/* Contact Info */}
           <div className="space-y-8">
-            <Card className="shadow-elegant">
+            <Card className="shadow-elegant dark:border-border">
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
@@ -141,7 +141,7 @@ const Contact = () => {
               </CardContent>
             </Card>
 
-            <Card className="shadow-elegant">
+            <Card className="shadow-elegant dark:border-border">
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
@@ -165,7 +165,7 @@ const Contact = () => {
               </CardContent>
             </Card>
 
-            <Card className="shadow-elegant">
+            <Card className="shadow-elegant dark:border-border">
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
@@ -185,7 +185,7 @@ const Contact = () => {
               </CardContent>
             </Card>
 
-            <Card className="shadow-elegant">
+            <Card className="shadow-elegant dark:border-border">
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
