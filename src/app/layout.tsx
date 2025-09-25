@@ -26,6 +26,9 @@ export const metadata: Metadata = {
   authors: [{ name: "ATIYE Beauty Studio" }],
   creator: "ATIYE Beauty Studio",
   publisher: "ATIYE Beauty Studio",
+  icons: {
+    icon: "/favicon.ico",
+  },
   formatDetection: {
     email: false,
     address: false,
