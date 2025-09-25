@@ -249,7 +249,7 @@ export default function DatenschutzPage() {
                 <p>Bei Fragen zum Datenschutz wenden Sie sich bitte an:</p>
                 <div className="bg-brand-sand p-4 rounded-lg">
                   <p><strong>ATIYE Beauty Studio</strong></p>
-                  <p>Atiye Yilmaz</p>
+                  <p>Atiye Kibar</p>
                   <p>Musterstraße 123</p>
                   <p>12345 Musterstadt</p>
                   <p>E-Mail: info@atiye-beauty.de</p>

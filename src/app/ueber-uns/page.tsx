@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 const team = [
   {
-    name: "Atiye Yilmaz",
+    name: "Atiye Kibar",
     role: "Inhaberin & Laser-Spezialistin",
     description: "Zertifizierte Laser-Therapeutin mit über 5 Jahren Erfahrung in der dauerhaften Haarentfernung.",
     qualifications: ["NiSV-Zertifizierung", "Dermatologie-Fortbildung", "Kundenberatung"],

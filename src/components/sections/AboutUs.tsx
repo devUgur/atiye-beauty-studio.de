@@ -11,7 +11,7 @@ const AboutUs = () => {
             <div className="relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl">
               <Image
                 src="/images/about-me.jpg"
-                alt="Atiye Yilmaz - Inhaberin ATIYE Beauty Studio"
+                alt="Atiye Kibar - Inhaberin ATIYE Beauty Studio"
                 fill
                 className="object-cover"
                 quality={90}
@@ -37,7 +37,7 @@ const AboutUs = () => {
               </h2>
               <p className="text-lg text-foreground/80 leading-relaxed mb-6">
                 Willkommen bei ATIYE Beauty Studio – Ihrem vertrauensvollen Partner für 
-                dauerhaft schöne Haut. Als einzigartiges Gewerbe von Atiye Yilmaz bieten wir 
+                dauerhaft schöne Haut. Als einzigartiges Gewerbe von Atiye Kibar bieten wir 
                 Ihnen professionelle Laser-Haarentfernung mit höchsten Qualitätsstandards.
               </p>
               <p className="text-lg text-foreground/80 leading-relaxed">

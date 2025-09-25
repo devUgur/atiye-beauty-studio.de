@@ -30,7 +30,7 @@ export default function ImpressumPage() {
               </h2>
               <div className="text-brand-brown-600 space-y-2">
                 <p><strong>ATIYE Beauty Studio</strong></p>
-                <p>Inhaberin: Atiye Yilmaz</p>
+                <p>Inhaberin: Atiye Kibar</p>
                 <p>Musterstraße 123</p>
                 <p>12345 Musterstadt</p>
                 <p>Deutschland</p>
@@ -79,7 +79,7 @@ export default function ImpressumPage() {
                 Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV
               </h2>
               <div className="text-brand-brown-600 space-y-2">
-                <p>Atiye Yilmaz</p>
+                <p>Atiye Kibar</p>
                 <p>Musterstraße 123</p>
                 <p>12345 Musterstadt</p>
               </div>
