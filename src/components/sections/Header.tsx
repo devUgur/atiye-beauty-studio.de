@@ -101,10 +101,14 @@ const Header = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, [activeIndex, navItems]);
 
-  // Underline (deins)
+  // Underline (Desktop)
   const [underlineRect, setUnderlineRect] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
   const navContainerRef = useRef<HTMLDivElement | null>(null);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  
+  // Mobile Underline - individuelle Hover-States für jeden Link
+  const [mobileHoveredIndex, setMobileHoveredIndex] = useState<number | null>(null);
+  const mobileItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const measureUnderline = useCallback(() => {
     const container = navContainerRef.current;
     const el = itemRefs.current[activeIndex];
@@ -117,6 +121,15 @@ const Header = () => {
       width: rect.width 
     });
   }, [activeIndex]);
+
+  // Mobile Underline - einfache Hover-Logik
+  const handleMobileHover = useCallback((index: number) => {
+    setMobileHoveredIndex(index);
+  }, []);
+
+  const handleMobileLeave = useCallback(() => {
+    setMobileHoveredIndex(null);
+  }, []);
   useLayoutEffect(() => {
     const container = navContainerRef.current;
     if (!container) return;
@@ -132,6 +145,8 @@ const Header = () => {
     return () => window.removeEventListener("resize", onResize);
   }, [measureUnderline]);
 
+  // Mobile Underline - keine komplexe Logik nötig
+
   useEffect(() => {
     const hash = window.location.hash;
     const idx = navItems.findIndex((n) => (!hash && n.isHome) || (hash && n.href === hash));
@@ -140,17 +155,45 @@ const Header = () => {
 
   const handleNavClick = (href: string, isHome?: boolean, idx?: number) => {
     if (typeof idx === "number") { setPrevIndex(activeIndex); setActiveIndex(idx); }
+    
     if (isHome) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
-      const el = document.querySelector(href) as HTMLElement | null;
-      if (el) {
-        const h = baseHeaderHeight; // beim Scrollen kompakte Höhe berücksichtigen
-        const y = el.getBoundingClientRect().top + window.pageYOffset - h;
-        window.scrollTo({ top: y, behavior: "smooth" });
+      // Schließe das mobile Menü sofort
+      setIsMenuOpen(false);
+      
+      // Entferne Focus vom Button um aria-hidden Problem zu vermeiden
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
       }
+      
+      // Scroll zu #start Element - sofort ohne setTimeout
+      const startElement = document.querySelector('#start') as HTMLElement | null;
+      if (startElement) {
+        const h = baseHeaderHeight;
+        const y = startElement.getBoundingClientRect().top + window.pageYOffset - h;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      
+    } else {
+      // Schließe das mobile Menü sofort
+      setIsMenuOpen(false);
+      
+      // Entferne Focus vom Button um aria-hidden Problem zu vermeiden
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+      
+      // Warte kurz, damit das Menü geschlossen wird, bevor gescrollt wird
+      setTimeout(() => {
+        const el = document.querySelector(href) as HTMLElement | null;
+        if (el) {
+          const h = baseHeaderHeight; // beim Scrollen kompakte Höhe berücksichtigen
+          const y = el.getBoundingClientRect().top + window.pageYOffset - h;
+          window.scrollTo({ top: y, behavior: "smooth" });
+        }
+      }, 100);
     }
-    setIsMenuOpen(false);
   };
 
   const movingRight = activeIndex >= prevIndex;
@@ -330,6 +373,7 @@ const Header = () => {
           visibility: isMenuOpen ? "visible" : "hidden",
         }}
         aria-hidden={!isMenuOpen}
+        inert={!isMenuOpen}
         id="mobile-menu"
       >
         <motion.div
@@ -349,8 +393,11 @@ const Header = () => {
               {navItems.map((item, idx) => (
               <motion.button
                   key={item.label}
+                  ref={(el) => { mobileItemRefs.current[idx] = el; }}
                 onClick={() => handleNavClick(item.href, item.isHome, idx)}
-                className={`text-base font-medium transition-colors text-left focus:outline-none ${
+                onMouseEnter={() => handleMobileHover(idx)}
+                onMouseLeave={handleMobileLeave}
+                className={`text-base font-medium transition-colors text-left focus:outline-none relative w-full group ${
                     idx === activeIndex ? "text-primary" : "text-foreground hover:text-primary"
                   }`}
                 initial={{ opacity: 0, x: -20 }}
@@ -364,7 +411,22 @@ const Header = () => {
                   ease: [0.4, 0, 0.2, 1]
                 }}
                 >
-                  {item.label}
+                  <span className="inline-block relative">
+                    {item.label}
+                    {/* Individueller Underline für jeden Link */}
+                    <motion.div
+                      className="absolute bottom-0 left-0 h-[2px] bg-primary rounded-full"
+                      initial={false}
+                      animate={{ 
+                        width: mobileHoveredIndex === idx ? "100%" : "0%",
+                        opacity: mobileHoveredIndex === idx ? 1 : 0
+                      }}
+                      transition={{ 
+                        duration: 0.2,
+                        ease: [0.4, 0, 0.2, 1]
+                      }}
+                    />
+                  </span>
               </motion.button>
             ))}
             <motion.div 
