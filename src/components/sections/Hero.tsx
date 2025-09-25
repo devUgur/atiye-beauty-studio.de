@@ -3,16 +3,16 @@
 import { Button } from "@/components/ui/Button";
 import { ArrowRight, Shield, Zap, Users } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const Hero = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState(false);
-  const images = [
+  const images = useMemo(() => [
     "/images/01.jpg",
     "/images/02.jpg", 
     "/images/03.jpg"
-  ];
+  ], []);
 
   // Preload all images to prevent flickering
   useEffect(() => {
@@ -113,32 +113,32 @@ const Hero = () => {
 
           {/* USP Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            <div className="bg-card/80 backdrop-blur p-6 rounded-lg shadow-warm border border-border">
+            <div className="bg-transparent backdrop-blur-none p-6 rounded-lg shadow-none border-none sm:bg-card/80 sm:backdrop-blur sm:shadow-warm sm:border sm:border-border">
               <Shield className="h-8 w-8 text-primary mb-3" />
-              <h3 className="font-serif text-lg font-semibold text-card-foreground mb-2">
+              <h3 className="font-serif text-lg font-semibold text-white mb-2 sm:text-card-foreground">
                 NiSV-zertifiziert
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-white/90 sm:text-muted-foreground">
                 Höchste Sicherheitsstandards nach deutscher Verordnung
               </p>
             </div>
 
-            <div className="bg-card/80 backdrop-blur p-6 rounded-lg shadow-warm border border-border">
+            <div className="bg-transparent backdrop-blur-none p-6 rounded-lg shadow-none border-none sm:bg-card/80 sm:backdrop-blur sm:shadow-warm sm:border sm:border-border">
               <Zap className="h-8 w-8 text-primary mb-3" />
-              <h3 className="font-serif text-lg font-semibold text-card-foreground mb-2">
+              <h3 className="font-serif text-lg font-semibold text-white mb-2 sm:text-card-foreground">
                 Moderne Technologie
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-white/90 sm:text-muted-foreground">
                 Neueste Laser-Technologie für optimale Ergebnisse
               </p>
             </div>
 
-            <div className="bg-card/80 backdrop-blur p-6 rounded-lg shadow-warm border border-border">
+            <div className="bg-transparent backdrop-blur-none p-6 rounded-lg shadow-none border-none sm:bg-card/80 sm:backdrop-blur sm:shadow-warm sm:border sm:border-border">
               <Users className="h-8 w-8 text-primary mb-3" />
-              <h3 className="font-serif text-lg font-semibold text-card-foreground mb-2">
+              <h3 className="font-serif text-lg font-semibold text-white mb-2 sm:text-card-foreground">
                 Für Frauen & Männer
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-white/90 sm:text-muted-foreground">
                 Individuelle Behandlung für alle Hauttypen
               </p>
             </div>
@@ -147,7 +147,7 @@ const Hero = () => {
       </div>
 
       {/* Slideshow Indicators */}
-      <div className="absolute bottom-12 md:bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
         <div className="flex space-x-2">
           {images.map((_, index) => (
             <button
