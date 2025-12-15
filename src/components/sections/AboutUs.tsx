@@ -1,122 +1,233 @@
+"use client";
+
 import Image from "next/image";
-import { Shield, Award, Heart, Users } from "lucide-react";
+import { Shield, Users, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import studio01 from "@/assets/studio/01.png";
+import studio02 from "@/assets/studio/02.png";
+import studio03 from "@/assets/studio/03.png";
+import studio04 from "@/assets/studio/04.png";
+
+// Studio Bilder
+const studioImages = [
+  { src: studio01, alt: "Studio Bild 1" },
+  { src: studio02, alt: "Studio Bild 2" },
+  { src: studio03, alt: "Studio Bild 3" },
+  { src: studio04, alt: "Studio Bild 4" },
+];
 
 const AboutUs = () => {
+  const imageRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    const revealElements = document.querySelectorAll('#about .reveal');
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("active");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -100px 0px" }
+    );
+
+    revealElements.forEach((el) => {
+      observer.observe(el);
+    });
+
+    // Fallback: if elements are already in viewport, activate them immediately
+    revealElements.forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      const isInViewport = rect.top < window.innerHeight && rect.bottom > 0;
+      if (isInViewport) {
+        el.classList.add("active");
+        observer.unobserve(el);
+      }
+    });
+
+    return () => {
+      revealElements.forEach((el) => {
+        observer.unobserve(el);
+      });
+    };
+  }, []);
+
+  // Auto-slide functionality
+  useEffect(() => {
+    if (isHovered) return; // Pause on hover
+
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % studioImages.length);
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [isHovered]);
+
+  const goToPrevious = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + studioImages.length) % studioImages.length);
+  };
+
+  const goToNext = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % studioImages.length);
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentImageIndex(index);
+  };
+
   return (
-    <section className="py-24 bg-background" id="ueber-uns">
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Image Section */}
-          <div className="relative">
-            <div className="relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl">
-              <Image
-                src="/images/about-me.jpg"
-                alt="Atiye Kibar - Inhaberin ATIYE Beauty Studio"
-                fill
-                className="object-cover"
-                quality={90}
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+    <section id="about" className="py-16 md:py-32 bg-white/60 dark:bg-stone-950/60 backdrop-blur-sm relative z-20">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center">
+        <div 
+          className="relative reveal w-full lg:w-auto" 
+          ref={imageRef}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <div className="relative aspect-[4/3] md:aspect-[4/5] rounded-xl md:rounded-[2rem] overflow-hidden shadow-2xl bg-gradient-to-tr from-stone-200 to-bronze-400/20 dark:from-stone-800 dark:to-stone-900">
+            {/* Image Slider */}
+            {studioImages.map((image, index) => (
+              <div
+                key={index}
+                className={`absolute inset-0 transition-opacity duration-1000 ${
+                  index === currentImageIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+                }`}
+              >
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-[2s]"
+                  priority={index === 0}
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              </div>
+            ))}
+
+            {/* Navigation Arrows */}
+            <button
+              onClick={goToPrevious}
+              className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-20 p-1.5 md:p-2 rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/30 hover:bg-white/30 dark:hover:bg-black/30 transition-all duration-300 group"
+              aria-label="Vorheriges Bild"
+            >
+              <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-white group-hover:scale-110 transition-transform" />
+            </button>
+            <button
+              onClick={goToNext}
+              className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-20 p-1.5 md:p-2 rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/30 hover:bg-white/30 dark:hover:bg-black/30 transition-all duration-300 group"
+              aria-label="Nächstes Bild"
+            >
+              <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-white group-hover:scale-110 transition-transform" />
+            </button>
+
+            {/* Dots Indicator */}
+            <div className="absolute bottom-3 md:bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+              {studioImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    index === currentImageIndex
+                      ? "w-8 bg-white/80"
+                      : "w-2 bg-white/40 hover:bg-white/60"
+                  }`}
+                  aria-label={`Gehe zu Bild ${index + 1}`}
+                />
+              ))}
             </div>
-            
-            {/* Floating Stats */}
-            <div className="absolute -bottom-6 -right-6 bg-primary text-primary-foreground p-6 rounded-2xl shadow-lg">
-              <div className="text-center">
-                <div className="text-3xl font-bold">500+</div>
-                <div className="text-sm opacity-90">Zufriedene Kunden</div>
+          </div>
+          {/* Stats Badge */}
+          <div className="absolute -bottom-3 md:-bottom-6 -right-3 md:-right-6 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 p-4 md:p-8 rounded-xl md:rounded-2xl shadow-xl z-30">
+            <p className="text-2xl md:text-4xl font-serif font-medium">500+</p>
+            <p className="text-xs md:text-sm font-medium opacity-80 mt-1">Zufriedene Kunden</p>
+          </div>
+        </div>
+
+        <div className="reveal delay-200" ref={contentRef}>
+          <div className="inline-flex items-center space-x-2 bg-white/40 dark:bg-stone-900/40 backdrop-blur-sm border border-stone-200/50 dark:border-stone-800 px-3 py-1 rounded-full text-sm text-stone-600 dark:text-stone-400 mb-6">
+            <span className="flex h-2 w-2 rounded-full bg-bronze-500"></span>
+            <span>Unsere Geschichte</span>
+          </div>
+          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight mb-6 dark:text-stone-100">
+            Über Uns
+          </h2>
+          <div className="space-y-6">
+            {/* Hero Statement */}
+            <div className="mb-6 flex flex-wrap items-center gap-3 md:gap-4">
+              <p className="text-xl md:text-2xl font-serif font-medium text-stone-900 dark:text-stone-100 leading-tight">
+                Dauerhaft schön.
+              </p>
+              <span className="text-stone-300 dark:text-stone-700">•</span>
+              <p className="text-xl md:text-2xl font-serif font-medium text-bronze-600 dark:text-bronze-400 italic leading-tight">
+                Persönlich.
+              </p>
+              <span className="text-stone-300 dark:text-stone-700">•</span>
+              <p className="text-xl md:text-2xl font-serif font-medium text-stone-900 dark:text-stone-100 leading-tight">
+                Professionell.
+              </p>
+            </div>
+
+            {/* Main Content - Moderner strukturiert */}
+            <div className="space-y-6 text-base md:text-lg text-stone-600 dark:text-stone-400 leading-relaxed">
+              <div className="p-6 rounded-xl bg-gradient-to-br from-stone-50/80 to-bronze-50/40 dark:from-stone-900/40 dark:to-bronze-950/20 border border-stone-200/60 dark:border-stone-800/60 backdrop-blur-sm">
+                <p className="text-lg md:text-xl text-stone-700 dark:text-stone-300 leading-relaxed">
+                  Willkommen bei{" "}
+                  <span className="font-serif font-semibold text-stone-900 dark:text-stone-100 text-xl md:text-2xl">
+                    ATIYE Beauty Studio
+                  </span>
+                  {" "}– Ihrem vertrauensvollen Partner für dauerhaft schöne Haut.
+                </p>
+              </div>
+
+              {/* Highlight Box für Erfahrung */}
+              <div className="p-5 rounded-xl bg-gradient-to-br from-bronze-50/50 to-stone-50/50 dark:from-bronze-950/20 dark:to-stone-900/30 border border-bronze-200/30 dark:border-bronze-800/30 backdrop-blur-sm">
+                <p className="text-stone-700 dark:text-stone-300">
+                  Mit über <span className="font-bold text-bronze-700 dark:text-bronze-400 text-lg">2 Jahren Erfahrung</span> in der 
+                  professionellen Laser-Haarentfernung haben wir bereits Hunderte von zufriedenen Kunden 
+                  auf ihrem Weg zu seidig glatter Haut begleitet.
+                </p>
+              </div>
+            </div>
+
+            {/* Quote - Moderner gestylt */}
+            <div className="mt-8 p-6 rounded-2xl bg-gradient-to-br from-stone-100/60 to-bronze-50/40 dark:from-stone-900/40 dark:to-bronze-950/20 border border-bronze-200/40 dark:border-bronze-800/30 backdrop-blur-md shadow-sm">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 mt-1">
+                  <div className="w-1 h-12 bg-gradient-to-b from-bronze-500 to-bronze-300 rounded-full"></div>
+                </div>
+                <p className="text-lg md:text-xl font-serif italic text-stone-800 dark:text-stone-200 leading-relaxed">
+                  "Jeder Mensch ist einzigartig – und so sollte auch jede Behandlung sein."
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Content Section */}
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-4xl lg:text-5xl font-serif font-bold text-primary mb-6">
-                Über uns
-              </h2>
-              <p className="text-lg text-foreground/80 leading-relaxed mb-6">
-                Willkommen bei ATIYE Beauty Studio – Ihrem vertrauensvollen Partner für 
-                dauerhaft schöne Haut. Als einzigartiges Gewerbe von Atiye Kibar bieten wir 
-                Ihnen professionelle Laser-Haarentfernung mit höchsten Qualitätsstandards.
-              </p>
-              <p className="text-lg text-foreground/80 leading-relaxed">
-                Mit über 5 Jahren Erfahrung und modernster Technologie sorgen wir dafür, 
-                dass Sie sich in Ihrer Haut wohlfühlen. Unser Studio steht für Vertrauen, 
-                Sicherheit und nachhaltige Ergebnisse.
-              </p>
-            </div>
-
-            {/* Key Features */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Shield className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-serif text-lg font-semibold text-primary mb-2">
-                    NiSV-zertifiziert
-                  </h3>
-                  <p className="text-sm text-foreground/70">
-                    Höchste Sicherheitsstandards nach deutscher Verordnung
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Award className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-serif text-lg font-semibold text-primary mb-2">
-                    Qualitätssiegel
-                  </h3>
-                  <p className="text-sm text-foreground/70">
-                    Regelmäßige Qualitätskontrollen und Weiterbildungen
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Heart className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-serif text-lg font-semibold text-primary mb-2">
-                    Kundenzufriedenheit
-                  </h3>
-                  <p className="text-sm text-foreground/70">
-                    98% Weiterempfehlungsrate und persönliche Betreuung
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Users className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-serif text-lg font-semibold text-primary mb-2">
-                    Individuelle Beratung
-                  </h3>
-                  <p className="text-sm text-foreground/70">
-                    Maßgeschneiderte Behandlungspläne für jeden Hauttyp
-                  </p>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+            <div className="flex gap-4 group">
+              <Shield className="w-10 h-10 text-bronze-500 group-hover:scale-110 transition-transform flex-shrink-0" />
+              <div>
+                <h4 className="font-semibold text-stone-900 dark:text-stone-100">
+                  NISV-Zertifiziert
+                </h4>
+                <p className="text-sm text-stone-500 mt-1">
+                  Höchste Sicherheitsstandards nach deutscher Verordnung.
+                </p>
               </div>
             </div>
-
-            {/* CTA */}
-            <div className="pt-4">
-              <a 
-                href="/ueber-uns" 
-                className="inline-flex items-center text-primary hover:text-accent font-medium transition-colors"
-              >
-                Mehr über uns erfahren
-                <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
+            <div className="flex gap-4 group">
+              <Users className="w-10 h-10 text-bronze-500 group-hover:scale-110 transition-transform flex-shrink-0" />
+              <div>
+                <h4 className="font-semibold text-stone-900 dark:text-stone-100">Individuell</h4>
+                <p className="text-sm text-stone-500 mt-1">
+                  Maßgeschneiderte Behandlungspläne für jeden Hauttyp.
+                </p>
+              </div>
             </div>
           </div>
         </div>

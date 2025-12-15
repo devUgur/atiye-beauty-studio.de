@@ -37,9 +37,9 @@ export default function Home() {
           geoMidpoint: "52.5200,13.4050",
         }}
       />
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors duration-500">
         <Header />
-        <main>
+        <main className="relative">
           <Hero />
           <Services />
           <Pricing />

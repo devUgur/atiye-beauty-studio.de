@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -7,10 +7,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 
-const cormorantGaramond = Cormorant_Garamond({
+const playfairDisplay = Playfair_Display({
   variable: "--font-serif",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
 });
 
 const inter = Inter({
@@ -79,8 +80,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="de" className="scroll-smooth" suppressHydrationWarning>
+      <head />
       <body
-        className={`${cormorantGaramond.variable} ${inter.variable} font-sans antialiased`}
+        className={`${playfairDisplay.variable} ${inter.variable} font-sans antialiased`}
       >
         <ThemeProvider
           attribute="class"

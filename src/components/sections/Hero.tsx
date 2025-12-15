@@ -1,166 +1,244 @@
 "use client";
 
-import { Button } from "@/components/ui/Button";
-import { ArrowRight, Shield, Zap, Users } from "lucide-react";
+import { ArrowRight, Shield, Zap, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import studio01 from "@/assets/studio/01.png";
+import studio02 from "@/assets/studio/02.png";
+import studio03 from "@/assets/studio/03.png";
+import studio04 from "@/assets/studio/04.png";
+
+// Studio Bilder
+const studioImages = [
+  { src: studio01, alt: "Studio Bild 1" },
+  { src: studio02, alt: "Studio Bild 2" },
+  { src: studio03, alt: "Studio Bild 3" },
+  { src: studio04, alt: "Studio Bild 4" },
+];
 
 const Hero = () => {
+  const textRef = useRef<HTMLDivElement>(null);
+  const visualRef = useRef<HTMLDivElement>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [imagesLoaded, setImagesLoaded] = useState(false);
-  const images = useMemo(() => [
-    "/images/01.jpg",
-    "/images/02.jpg", 
-    "/images/03.jpg"
-  ], []);
+  const [isHovered, setIsHovered] = useState(false);
 
-  // Preload all images to prevent flickering
   useEffect(() => {
-    const preloadImages = async () => {
-      const imagePromises = images.map((src) => {
-        return new Promise((resolve, reject) => {
-          const img = new window.Image();
-          img.onload = resolve;
-          img.onerror = reject;
-          img.src = src;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("active");
+            observer.unobserve(entry.target);
+          }
         });
-      });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+    );
+
+    // Check if elements are already in viewport and activate them
+    const checkAndActivate = (element: HTMLElement | null) => {
+      if (!element) return;
       
-      try {
-        await Promise.all(imagePromises);
-        setImagesLoaded(true);
-      } catch (error) {
-        console.error('Error preloading images:', error);
-        setImagesLoaded(true); // Still show images even if preload fails
+      const rect = element.getBoundingClientRect();
+      const isVisible = rect.top < window.innerHeight + 200 && rect.bottom > -200;
+      
+      if (isVisible) {
+        element.classList.add("active");
+      } else {
+        observer.observe(element);
       }
     };
 
-    preloadImages();
-  }, [images]);
+    // Use requestAnimationFrame to ensure DOM is ready
+    requestAnimationFrame(() => {
+      checkAndActivate(textRef.current);
+      checkAndActivate(visualRef.current);
+    });
 
+    return () => {
+      if (textRef.current) observer.unobserve(textRef.current);
+      if (visualRef.current) observer.unobserve(visualRef.current);
+    };
+  }, []);
+
+  // Auto-slide functionality
   useEffect(() => {
-    if (!imagesLoaded) return; // Don't start slideshow until images are loaded
-    
+    if (isHovered) return; // Pause on hover
+
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => 
-        prevIndex === images.length - 1 ? 0 : prevIndex + 1
-      );
+      setCurrentImageIndex((prev) => (prev + 1) % studioImages.length);
     }, 5000); // Change image every 5 seconds
 
     return () => clearInterval(interval);
-  }, [images.length, imagesLoaded]);
+  }, [isHovered]);
+
+  const goToPrevious = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + studioImages.length) % studioImages.length);
+  };
+
+  const goToNext = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % studioImages.length);
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentImageIndex(index);
+  };
 
   return (
-    <section className="relative min-h-screen w-full flex items-center wave-bg overflow-hidden" id="start">
-      {/* Background Images Slideshow */}
-      <div className="absolute inset-0">
-        {images.map((image, index) => (
+    <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden z-10">
+      {/* Mobile Background Images - Full Background */}
+      <div className="absolute inset-0 lg:hidden z-0">
+        {studioImages.map((image, index) => (
           <div
             key={index}
             className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentImageIndex ? "opacity-100" : "opacity-0"
+              index === currentImageIndex ? "opacity-100 z-10" : "opacity-0 z-0"
             }`}
           >
             <Image
-              src={image}
-              alt={`Hero background ${index + 1}`}
+              src={image.src}
+              alt={image.alt}
               fill
-              className="object-cover"
+              className="object-cover opacity-60 dark:opacity-50"
               priority={index === 0}
-              quality={90}
-              sizes="100vw"
-              placeholder="blur"
-              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+              sizes="(max-width: 1024px) 100vw, 0px"
             />
           </div>
         ))}
-        {/* Overlay Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/70 to-background/50" />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/10" />
-        {/* Light overlay for better text readability with transparent header */}
-        <div className="absolute inset-0 bg-black/20" />
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-white/50 dark:from-black/40 dark:via-transparent dark:to-black/60 z-10 pointer-events-none"></div>
       </div>
-
-      <div className="relative z-10 container mx-auto px-4 lg:px-8 flex items-center justify-center min-h-full py-16 md:py-12 lg:py-16">
-        <div className="max-w-4xl text-left w-full">
-          {/* Main Heading */}
-          <h1 className="hero-text text-3xl xs:text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-primary mb-3 sm:mb-4 md:mb-6 mt-6 sm:mt-8 md:mt-0">
-            Dauerhaft schön.
-          </h1>
-          
-          {/* Subheading */}
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-foreground/80 mb-4 sm:mb-6 md:mb-8 max-w-2xl leading-relaxed">
-            Dauerhafte Haarentfernung – sicher, schonend, sichtbar.
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8 md:mb-12">
-            <Button 
-              size="lg" 
-              className="bg-primary hover:bg-accent text-primary-foreground px-8 py-4 text-lg font-medium transition-smooth"
-            >
-              Termin vereinbaren
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-4 text-lg font-medium transition-smooth"
-            >
-              Preise ansehen
-            </Button>
+      
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+        {/* Text Content */}
+        <div className="space-y-8 z-10 reveal" ref={textRef}>
+          <div className="inline-flex items-center space-x-2 bg-white/40 dark:bg-stone-900/40 backdrop-blur-sm border border-stone-200/50 dark:border-stone-800 px-3 py-1 rounded-full text-sm text-stone-600 dark:text-stone-400 shadow-sm">
+            <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+            <span>NISV-Zertifiziertes Studio</span>
           </div>
 
-          {/* USP Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            <div className="bg-transparent backdrop-blur-none p-6 rounded-lg shadow-none border-none sm:bg-card/80 sm:backdrop-blur sm:shadow-warm sm:border sm:border-border">
-              <Shield className="h-8 w-8 text-primary mb-3" />
-              <h3 className="font-serif text-lg font-semibold text-white mb-2 sm:text-card-foreground">
-                NiSV-zertifiziert
-              </h3>
-              <p className="text-sm text-white/90 sm:text-muted-foreground">
-                Höchste Sicherheitsstandards nach deutscher Verordnung
-              </p>
-            </div>
+          <h1 className="font-serif text-6xl md:text-7xl lg:text-8xl tracking-tight font-medium text-stone-900 dark:text-white leading-[1.1]">
+            Dauerhaft <br />
+            <span className="text-gradient italic pr-2">hautschön.</span>
+          </h1>
 
-            <div className="bg-transparent backdrop-blur-none p-6 rounded-lg shadow-none border-none sm:bg-card/80 sm:backdrop-blur sm:shadow-warm sm:border sm:border-border">
-              <Zap className="h-8 w-8 text-primary mb-3" />
-              <h3 className="font-serif text-lg font-semibold text-white mb-2 sm:text-card-foreground">
-                Moderne Technologie
-              </h3>
-              <p className="text-sm text-white/90 sm:text-muted-foreground">
-                Neueste Laser-Technologie für optimale Ergebnisse
-              </p>
-            </div>
+          <p className="text-xl text-stone-600 dark:text-stone-300 max-w-lg">
+            Erleben Sie die Freiheit seidig glatter Haut. Modernste Laser-Technologie für Sie & Ihn – sicher, schonend und effektiv.
+          </p>
 
-            <div className="bg-transparent backdrop-blur-none p-6 rounded-lg shadow-none border-none sm:bg-card/80 sm:backdrop-blur sm:shadow-warm sm:border sm:border-border">
-              <Users className="h-8 w-8 text-primary mb-3" />
-              <h3 className="font-serif text-lg font-semibold text-white mb-2 sm:text-card-foreground">
-                Für Frauen & Männer
-              </h3>
-              <p className="text-sm text-white/90 sm:text-muted-foreground">
-                Individuelle Behandlung für alle Hauttypen
-              </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <a
+              href="/termin"
+              className="group flex items-center justify-center gap-2 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-950 px-8 py-4 rounded-full text-base font-medium hover:scale-[1.02] transition-all duration-300 shadow-xl shadow-stone-200/50 dark:shadow-none"
+            >
+              <span>Kostenlose Beratung</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </a>
+            <a
+              href="#pricing"
+              className="flex items-center justify-center gap-2 bg-white/30 dark:bg-stone-800/30 backdrop-blur-md border border-stone-200/50 dark:border-stone-700/50 text-stone-900 dark:text-stone-100 px-8 py-4 rounded-full text-base font-medium hover:bg-white/50 dark:hover:bg-stone-800/50 transition-all duration-300"
+            >
+              Preise ansehen
+            </a>
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="pt-8 flex gap-8 border-t border-stone-200/40 dark:border-stone-800/40">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-white/40 dark:bg-stone-800/40">
+                <Shield className="w-5 h-5 text-stone-700 dark:text-stone-300" />
+              </div>
+              <div className="text-sm leading-tight">
+                <p className="font-semibold text-stone-900 dark:text-white">Geprüft</p>
+                <p className="text-stone-500">NISV-Norm</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-white/40 dark:bg-stone-800/40">
+                <Zap className="w-5 h-5 text-stone-700 dark:text-stone-300" />
+              </div>
+              <div className="text-sm leading-tight">
+                <p className="font-semibold text-stone-900 dark:text-white">High-Tech</p>
+                <p className="text-stone-500">Diodenlaser</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Slideshow Indicators */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
-        <div className="flex space-x-2">
-          {images.map((_, index) => (
+        {/* Visual / Image Slider - Desktop */}
+        <div
+          className="relative h-full min-h-[500px] w-full hidden lg:block reveal delay-200"
+          ref={visualRef}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <div className="absolute inset-0 bg-gradient-to-tr from-stone-200 to-bronze-400/20 dark:from-stone-800 dark:to-stone-900 rounded-[2rem] overflow-hidden shadow-2xl shadow-bronze-900/10">
+            {/* Image Slider Container */}
+            <div className="absolute inset-0 opacity-80 mix-blend-overlay">
+              {studioImages.map((image, index) => (
+                <div
+                  key={index}
+                  className={`absolute inset-0 transition-opacity duration-1000 ${
+                    index === currentImageIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+                  }`}
+                >
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    fill
+                    className="object-cover hover:scale-105 transition-transform duration-[2s]"
+                    priority={index === 0}
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Navigation Arrows */}
             <button
-              key={index}
-              onClick={() => setCurrentImageIndex(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === currentImageIndex 
-                  ? "bg-primary scale-125" 
-                  : "bg-white/50 hover:bg-white/70"
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
+              onClick={goToPrevious}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/30 hover:bg-white/30 dark:hover:bg-black/30 transition-all duration-300 group"
+              aria-label="Vorheriges Bild"
+            >
+              <ChevronLeft className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+            </button>
+            <button
+              onClick={goToNext}
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/30 hover:bg-white/30 dark:hover:bg-black/30 transition-all duration-300 group"
+              aria-label="Nächstes Bild"
+            >
+              <ChevronRight className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+            </button>
+
+            {/* Dots Indicator */}
+            <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+              {studioImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    index === currentImageIndex
+                      ? "w-8 bg-white/80"
+                      : "w-2 bg-white/40 hover:bg-white/60"
+                  }`}
+                  aria-label={`Gehe zu Bild ${index + 1}`}
+                />
+              ))}
+            </div>
+
+            {/* Floating card overlay */}
+            <div className="absolute bottom-10 left-10 right-10 bg-white/10 dark:bg-black/40 backdrop-blur-xl border border-white/20 p-6 rounded-2xl animate-float shadow-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-white text-sm font-medium opacity-80">Behandlungserfolg</p>
+                  <p className="text-white text-2xl font-serif">Sichtbar glatter.</p>
+                </div>
+                <div className="h-12 w-12 rounded-full bg-white text-stone-900 flex items-center justify-center shadow-lg shadow-white/10">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

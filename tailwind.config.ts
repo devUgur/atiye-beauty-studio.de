@@ -60,15 +60,25 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Brand Colors
-        "brand-cream": "hsl(var(--brand-cream))",
-        "brand-sand": "hsl(var(--brand-sand))",
-        "brand-brown": {
-          300: "hsl(var(--brand-brown-300))",
-          600: "hsl(var(--brand-brown-600))",
-          700: "hsl(var(--brand-brown-700))",
+        // Stone color palette
+        stone: {
+          50: '#fafaf9',
+          100: '#f5f5f4',
+          200: '#e7e5e4',
+          300: '#d6d3d1',
+          400: '#a8a29e',
+          500: '#78716c',
+          600: '#57534e',
+          700: '#44403c',
+          800: '#292524',
+          900: '#1c1917',
+          950: '#0c0a09',
         },
-        "brand-bronze": "hsl(var(--brand-bronze))",
+        // Bronze colors
+        bronze: {
+          400: '#C29D7D',
+          500: '#A67F5D',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
@@ -108,10 +118,20 @@ const config: Config = {
             height: "0",
           },
         },
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'float': 'float 6s ease-in-out infinite',
       },
     },
   },
