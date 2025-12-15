@@ -82,15 +82,15 @@ const AboutUs = () => {
   };
 
   return (
-    <section id="about" className="py-16 md:py-32 bg-white/60 dark:bg-stone-950/60 backdrop-blur-sm relative z-20">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center">
+    <section id="about" className="py-32 bg-white/60 dark:bg-stone-950/60 backdrop-blur-sm relative z-20">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         <div 
-          className="relative reveal w-full lg:w-auto" 
+          className="relative reveal" 
           ref={imageRef}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <div className="relative aspect-[4/3] md:aspect-[4/5] rounded-xl md:rounded-[2rem] overflow-hidden shadow-2xl bg-gradient-to-tr from-stone-200 to-bronze-400/20 dark:from-stone-800 dark:to-stone-900">
+          <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden shadow-2xl bg-gradient-to-tr from-stone-200 to-bronze-400/20 dark:from-stone-800 dark:to-stone-900">
             {/* Image Slider */}
             {studioImages.map((image, index) => (
               <div
@@ -113,21 +113,21 @@ const AboutUs = () => {
             {/* Navigation Arrows */}
             <button
               onClick={goToPrevious}
-              className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-20 p-1.5 md:p-2 rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/30 hover:bg-white/30 dark:hover:bg-black/30 transition-all duration-300 group"
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/30 hover:bg-white/30 dark:hover:bg-black/30 transition-all duration-300 group"
               aria-label="Vorheriges Bild"
             >
-              <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-white group-hover:scale-110 transition-transform" />
+              <ChevronLeft className="w-5 h-5 text-white group-hover:scale-110 transition-transform" />
             </button>
             <button
               onClick={goToNext}
-              className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-20 p-1.5 md:p-2 rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/30 hover:bg-white/30 dark:hover:bg-black/30 transition-all duration-300 group"
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/30 hover:bg-white/30 dark:hover:bg-black/30 transition-all duration-300 group"
               aria-label="Nächstes Bild"
             >
-              <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-white group-hover:scale-110 transition-transform" />
+              <ChevronRight className="w-5 h-5 text-white group-hover:scale-110 transition-transform" />
             </button>
 
             {/* Dots Indicator */}
-            <div className="absolute bottom-3 md:bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
               {studioImages.map((_, index) => (
                 <button
                   key={index}
@@ -143,9 +143,9 @@ const AboutUs = () => {
             </div>
           </div>
           {/* Stats Badge */}
-          <div className="absolute -bottom-3 md:-bottom-6 -right-3 md:-right-6 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 p-4 md:p-8 rounded-xl md:rounded-2xl shadow-xl z-30">
-            <p className="text-2xl md:text-4xl font-serif font-medium">500+</p>
-            <p className="text-xs md:text-sm font-medium opacity-80 mt-1">Zufriedene Kunden</p>
+          <div className="absolute -bottom-6 -right-6 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 p-8 rounded-2xl shadow-xl z-30">
+            <p className="text-4xl font-serif font-medium">500+</p>
+            <p className="text-sm font-medium opacity-80 mt-1">Zufriedene Kunden</p>
           </div>
         </div>
 

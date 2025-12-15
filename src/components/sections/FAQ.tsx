@@ -112,7 +112,7 @@ const FAQ = () => {
                 className="w-full flex items-center justify-between p-6 text-left focus:outline-none hover:bg-white/80 dark:hover:bg-stone-900/80 transition-colors"
                 onClick={() => toggleFaq(index)}
               >
-                <span className="font-sans font-semibold text-base md:text-lg text-stone-900 dark:text-stone-50 pr-4 leading-snug">
+                <span className="font-serif font-medium text-xl dark:text-stone-100 pr-4">
                   {faq.question}
                 </span>
                 <ChevronDown
@@ -123,10 +123,10 @@ const FAQ = () => {
               </button>
               <div
                 className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                  openIndex === index ? "max-h-[800px]" : "max-h-0"
+                  openIndex === index ? "max-h-96" : "max-h-0"
                 }`}
               >
-                <div className="px-6 pb-6 text-stone-600 dark:text-stone-400 leading-relaxed text-base md:text-lg">
+                <div className="px-6 pb-6 text-stone-600 dark:text-stone-400 leading-relaxed text-base">
                   {faq.answer}
                 </div>
               </div>
