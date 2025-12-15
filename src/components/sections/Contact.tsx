@@ -12,7 +12,7 @@ const Contact = () => {
     email: "",
     services: [] as string[],
   });
-  const formRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
